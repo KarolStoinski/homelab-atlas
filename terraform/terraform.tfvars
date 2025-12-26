@@ -1,0 +1,1 @@
+proxmox_api_url = "https://pve1.atlas.stoinski.pro:8006/api2/json"

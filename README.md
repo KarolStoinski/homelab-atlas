@@ -28,6 +28,9 @@ underlying infrastructure—specifically High Availability, Disaster Recovery, S
 - Junie
 - Claude
 
+# Secrets management
+All cluster connection secrets are stored in 1Password and loaded via `op run` command. 
+
 # Initial Setup (2025-12-26)
 The Proxmox cluster and backup server were deployed manually.
 I also installed a Debian VM and a MikroTik RouterOS CHR VM.
