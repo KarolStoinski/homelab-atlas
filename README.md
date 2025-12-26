@@ -27,6 +27,7 @@ underlying infrastructure—specifically High Availability, Disaster Recovery, S
 - JetBrains IntelliJ IDEA 2025.3
 - Junie
 - Claude
+- 1Password
 
 # Secrets management
 All cluster connection secrets are stored in 1Password and loaded via `op run` command. 
@@ -40,7 +41,7 @@ The MikroTik VM has internet access and two interfaces:
 one for the internal VM network and one for the internet.
 
 # Next Steps (2025-12-26)
-- Connect Terraform to the PVE cluster.
+- Connect Terraform to the PVE cluster. (done 2025-12-26 21:48)
 - Deploy a simple Fedora CoreOS VM on the cluster using Terraform.
   - This VM will serve as an HTTP server for Ignition configurations.
 - Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes control plane nodes.
