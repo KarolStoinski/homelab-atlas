@@ -27,7 +27,8 @@ underlying infrastructure—specifically High Availability, Disaster Recovery, S
 - JetBrains IntelliJ IDEA 2025.3
 - Junie
 - Claude
-- 1Password
+- 1Password CLI
+- PowerShell on Windows 11
 
 # Secrets management
 All cluster connection secrets are stored in 1Password and loaded via `op run` command. 
