@@ -41,7 +41,7 @@ The MikroTik VM has internet access and two interfaces:
 one for the internal VM network and one for the internet.
 
 # Next Steps (2025-12-26)
-- Connect Terraform to the PVE cluster. (done 2025-12-26 21:48)
+- ~~Connect Terraform to the PVE cluster.~~
 - Deploy a simple Fedora CoreOS VM on the cluster using Terraform.
   - This VM will serve as an HTTP server for Ignition configurations.
 - Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes control plane nodes.
