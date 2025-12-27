@@ -10,30 +10,30 @@ resource "proxmox_virtual_environment_file" "fcos_ignition" {
     data = jsonencode({
       ignition = {
         version = "3.4.0"
-      }
+      },
       passwd = {
         users = [
           {
-            name = "core"
-            "sshAuthorizedKeys": [
+            name = "core",
+            sshAuthorizedKeys = [
               "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvBuMhx7sbVFpdYEsSDEcOeNenlsboGAHU41I0jdtes karol.stoinski@gmail.com"
             ]
           }
         ]
-      }
+      },
       storage = {
         directories = [
           {
-            path = "/var/www"
-            mode = 493  # 0755
+            path = "/var/www",
+            mode = 493
           }
         ]
-      }
+      },
       systemd = {
         units = [
           {
-            name    = "httpd.service"
-            enabled = true
+            name    = "httpd.service",
+            enabled = true,
             contents = <<-EOT
               [Unit]
               Description=HTTP Server (podman)
@@ -43,7 +43,8 @@ resource "proxmox_virtual_environment_file" "fcos_ignition" {
               [Service]
               ExecStartPre=-/usr/bin/podman kill httpd
               ExecStartPre=-/usr/bin/podman rm httpd
-              ExecStart=/usr/bin/podman run --name httpd -p 80:80 -v /var/www:/usr/local/apache2/htdocs:ro docker.io/httpd:latest
+              ExecStartPre=/bin/sleep 5
+              ExecStart=/usr/bin/podman run --name httpd -p 80:80 -v /var/www:/usr/local/apache2/htdocs docker.io/httpd:latest
               ExecStop=/usr/bin/podman stop httpd
 
               [Install]
