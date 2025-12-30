@@ -4,9 +4,8 @@ including Terraform, Ignition, and FluxCD.
 Everything is deployed on my home Proxmox cluster.
 
 # Hardware
-- 2x HP EliteDesk 800 G2 - Intel Core i5, 16GB RAM, 128GB SSD
-- 1x HP EliteDesk 800 G2 - Intel Core i5, 8GB RAM, 128GB SSD
-- 1x HP EliteDesk 800 G2 - Intel Core i5, 16GB RAM, 1TB HDD
+- 3x HP EliteDesk 800 G2 - Intel Core i5, 16GB RAM, 128GB SSD
+- 1x HP EliteDesk 800 G2 - Intel Core i5, 8GB RAM, 1TB HDD
 - Netgear ReadyNAS 102 - 2 x 2TB HDD
 
 # Hypervisor Cluster
@@ -29,14 +28,15 @@ underlying infrastructure—specifically High Availability, Disaster Recovery, S
 - Claude
 - 1Password CLI
 - PowerShell on Windows 11
+- CatchyOS
 
 # Secrets management
 All cluster connection secrets are stored in 1Password and loaded via `op run` command. 
 
 # Initial Setup (2025-12-26)
 The Proxmox cluster and backup server were deployed manually.
-I also installed a Debian VM and a MikroTik RouterOS CHR VM.
-Debian will be used as a development/debug machine within the cluster,
+I also installed a CatchyOS VM and a MikroTik RouterOS CHR VM.
+CatchyOS will be used as a development/debug machine within the cluster,
 while RouterOS will manage network access to and from the VMs.
 The MikroTik VM has internet access and two interfaces:
 one for the internal VM network and one for the internet.

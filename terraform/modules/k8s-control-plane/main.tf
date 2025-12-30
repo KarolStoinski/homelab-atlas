@@ -16,7 +16,7 @@ resource "proxmox_virtual_environment_file" "ignition" {
           {
             name = "core",
             sshAuthorizedKeys = [
-              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICvBuMhx7sbVFpdYEsSDEcOeNenlsboGAHU41I0jdtes karol.stoinski@gmail.com"
+              "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIVw0Nn7/iH2TM83WLGrpSVY6g0z+G+38LI+yeSRExwO karol.stoinski@gmail.com"
             ]
           }
         ]
