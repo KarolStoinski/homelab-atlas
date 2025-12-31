@@ -30,7 +30,7 @@ underlying infrastructure—specifically High Availability, Disaster Recovery, S
 - ~~PowerShell on Windows 11~~ (edit: I've switched development to CachyOS entirely. I connect to it through RDP)
 - CachyOS
 
-# Thoughts on CathyOS
+# Thoughts on CachyOS
 Hey! Is it for real? A Linux distro that just works... and with working RDP?!
 That's a first :O I would seriously consider using it as my daily driver if I were working on a PC full-time.
 
