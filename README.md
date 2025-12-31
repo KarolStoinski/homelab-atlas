@@ -27,16 +27,20 @@ underlying infrastructure—specifically High Availability, Disaster Recovery, S
 - Junie
 - Claude
 - 1Password CLI
-- PowerShell on Windows 11
-- CatchyOS
+- ~~PowerShell on Windows 11~~ (edit: I've switched development to CachyOS entirely. I connect to it through RDP)
+- CachyOS
+
+# Thoughts on CathyOS
+Hey! Is it for real? A Linux distro that just works... and with working RDP?!
+That's a first :O I would seriously consider using it as my daily driver if I were working on a PC full-time.
 
 # Secrets management
 All cluster connection secrets are stored in 1Password and loaded via `op run` command. 
 
 # Initial Setup (2025-12-26)
 The Proxmox cluster and backup server were deployed manually.
-I also installed a CatchyOS VM and a MikroTik RouterOS CHR VM.
-CatchyOS will be used as a development/debug machine within the cluster,
+I also installed a CachyOS VM and a MikroTik RouterOS CHR VM.
+CachyOS will be used as a development/debug machine within the cluster,
 while RouterOS will manage network access to and from the VMs.
 The MikroTik VM has internet access and two interfaces:
 one for the internal VM network and one for the internet.
