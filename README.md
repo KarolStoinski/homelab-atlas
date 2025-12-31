@@ -47,7 +47,7 @@ one for the internal VM network and one for the internet.
   - ~~This VM will serve as an HTTP server for Ignition configurations.~~
     ~~EDIT 2025-12-26: Won't be needed anymore. I can use Cloud Init to inject Ignition configs.~~
 - ~~Create a Terraform module for Fedora CoreOS VMs. (done 2025-12-27)~~
-- Add static IPs for the Fedora CoreOS VMs in the Terraform module.
+- ~~Add static IPs for the Fedora CoreOS VMs in the Terraform module.~~
 - Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes control plane nodes.
 - Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes worker nodes.
 - Write a tutorial on how to prepare a Fedora CoreOS VM Template for Terraform.

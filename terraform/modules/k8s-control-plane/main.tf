@@ -81,6 +81,17 @@ resource "proxmox_virtual_environment_vm" "vm" {
   initialization {
     datastore_id = proxmox_virtual_environment_file.ignition.datastore_id
     user_data_file_id = proxmox_virtual_environment_file.ignition.id
+
+    ip_config {
+      ipv4 {
+        address = "${var.vm_ip}/${var.netmask}"
+        gateway = var.gateway
+      }
+    }
+
+    dns {
+      servers = [var.dns_server]
+    }
   }
 
   # Network
