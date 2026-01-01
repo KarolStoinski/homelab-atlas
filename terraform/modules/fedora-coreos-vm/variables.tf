@@ -24,3 +24,15 @@ variable "netmask" {
   type        = number
   default     = 24
 }
+
+variable "cpu_cores" {
+  description = "Number of CPU cores"
+  type        = number
+  default     = 2
+}
+
+variable "memory" {
+  description = "Memory size in MB"
+  type        = number
+  default     = 4096
+}

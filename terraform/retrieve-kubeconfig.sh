@@ -1,0 +1,1 @@
+ssh core@10.10.1.11 sudo cat /etc/kubernetes/admin.conf > ~/.kube/config
