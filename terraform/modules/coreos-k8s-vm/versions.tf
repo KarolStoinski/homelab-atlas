@@ -6,5 +6,8 @@ terraform {
       source  = "bpg/proxmox"
       version = "~> 0.90"
     }
+    ct = {
+      source = "poseidon/ct"
+    }
   }
 }

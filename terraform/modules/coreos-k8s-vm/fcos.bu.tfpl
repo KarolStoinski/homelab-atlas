@@ -1,0 +1,161 @@
+variant: fcos
+version: 1.5.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIVw0Nn7/iH2TM83WLGrpSVY6g0z+G+38LI+yeSRExwO karol.stoinski@gmail.com
+storage:
+  files:
+    - path: /etc/hostname
+      mode: 0644
+      contents:
+        inline: ${hostname}
+    - path: /etc/modules-load.d/containerd.conf
+      mode: 0644
+      contents:
+        inline: |
+          overlay
+          br_netfilter
+    - path: /etc/sysctl.d/99-kubernetes-cri.conf
+      mode: 0644
+      contents:
+        inline: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.ipv4.ip_forward = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+    - path: /usr/local/bin/install-containerd.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -euxo pipefail
+
+          # Install containerd
+          if [ ! -f /usr/local/bin/containerd ]; then
+            curl -L https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-amd64.tar.gz | tar -xz -C /usr/local
+          fi
+
+          # Install runc
+          if [ ! -f /usr/local/sbin/runc ]; then
+            curl -L https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64 -o /usr/local/sbin/runc
+            chmod +x /usr/local/sbin/runc
+          fi
+
+          # Install CNI plugins
+          if [ ! -d /opt/cni/bin ]; then
+            mkdir -p /opt/cni/bin
+            curl -L https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz | tar -xz -C /opt/cni/bin
+          fi
+
+          # Create containerd config directory
+          mkdir -p /etc/containerd
+
+          # Generate default containerd config
+          if [ ! -f /etc/containerd/config.toml ]; then
+            /usr/local/bin/containerd config default > /etc/containerd/config.toml
+            # Enable SystemdCgroup
+            sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+          fi
+
+          # Load kernel modules
+          modprobe overlay
+          modprobe br_netfilter
+
+          # Apply sysctl settings
+          sysctl --system
+    - path: /usr/local/bin/install-kubernetes.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -euxo pipefail
+
+          KUBERNETES_VERSION="v1.29.1"
+
+          # Install crictl
+          if [ ! -f /usr/local/bin/crictl ]; then
+            CRICTL_VERSION="v1.29.0"
+            curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$${CRICTL_VERSION}/crictl-$${CRICTL_VERSION}-linux-amd64.tar.gz | tar -xz -C /usr/local/bin
+          fi
+
+          # Install kubelet, kubeadm, kubectl
+          if [ ! -f /usr/local/bin/kubelet ]; then
+            cd /usr/local/bin
+            curl -L --remote-name-all https://dl.k8s.io/release/$${KUBERNETES_VERSION}/bin/linux/amd64/{kubelet,kubeadm,kubectl}
+            chmod +x kubelet kubeadm kubectl
+          fi
+
+          # Create kubelet systemd service
+          if [ ! -f /etc/systemd/system/kubelet.service ]; then
+            curl -sSL https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubelet/kubelet.service | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service
+            mkdir -p /etc/systemd/system/kubelet.service.d
+            curl -sSL https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+          fi
+
+          # Create kubelet config directory
+          mkdir -p /var/lib/kubelet
+
+          # Reload systemd and enable kubelet
+          systemctl daemon-reload
+          systemctl enable kubelet
+systemd:
+  units:
+    - name: containerd-install.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install containerd and dependencies
+        DefaultDependencies=no
+        After=network-online.target
+        Wants=network-online.target
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/local/bin/install-containerd.sh
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: kubernetes-install.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Install Kubernetes components
+        DefaultDependencies=no
+        After=network-online.target containerd-install.service
+        Wants=network-online.target
+        Requires=containerd-install.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/local/bin/install-kubernetes.sh
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: containerd.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=containerd container runtime
+        Documentation=https://containerd.io
+        After=network.target local-fs.target containerd-install.service
+        Requires=containerd-install.service
+
+        [Service]
+        ExecStartPre=-/sbin/modprobe overlay
+        ExecStart=/usr/local/bin/containerd
+        Type=notify
+        Delegate=yes
+        KillMode=process
+        Restart=always
+        RestartSec=5
+        LimitNPROC=infinity
+        LimitCORE=infinity
+        LimitNOFILE=infinity
+        TasksMax=infinity
+        OOMScoreAdjust=-999
+
+        [Install]
+        WantedBy=multi-user.target
