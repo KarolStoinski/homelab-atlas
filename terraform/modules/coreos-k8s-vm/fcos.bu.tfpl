@@ -45,11 +45,15 @@ storage:
             chmod +x /usr/local/sbin/runc
           fi
 
-          # Install CNI plugins
+          # Install CNI plugins to /opt/cni/bin
           if [ ! -d /opt/cni/bin ]; then
             mkdir -p /opt/cni/bin
             curl -L https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz | tar -xz -C /opt/cni/bin
           fi
+
+          # Also copy to /var/lib/cni/bin for legacy sandboxes
+          mkdir -p /var/lib/cni/bin
+          cp -a /opt/cni/bin/* /var/lib/cni/bin/ 2>/dev/null || true
 
           # Create containerd config directory
           mkdir -p /etc/containerd
@@ -59,6 +63,14 @@ storage:
             /usr/local/bin/containerd config default > /etc/containerd/config.toml
             # Enable SystemdCgroup
             sed -i 's/SystemdCgroup = false/SystemdCgroup = true/g' /etc/containerd/config.toml
+            # Replace default CNI bin_dir with our custom path
+            sed -i 's|bin_dir = "/opt/cni/bin"|bin_dir = "/var/lib/cni/bin"|g' /etc/containerd/config.toml
+
+            # Verify the change was applied
+            if ! grep -q 'bin_dir = "/var/lib/cni/bin"' /etc/containerd/config.toml; then
+              echo "WARNING: Failed to set CNI bin_dir, containerd config may be incorrect"
+              cat /etc/containerd/config.toml | grep -A5 -B5 "cni"
+            fi
           fi
 
           # Load kernel modules
@@ -67,6 +79,12 @@ storage:
 
           # Apply sysctl settings
           sysctl --system
+
+          # Restart containerd if it's already running to pick up config changes
+          if systemctl is-active --quiet containerd; then
+            systemctl restart containerd
+            sleep 3
+          fi
     - path: /usr/local/bin/install-kubernetes.sh
       mode: 0755
       contents:
