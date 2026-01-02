@@ -36,19 +36,22 @@ storage:
 
           # Install containerd
           if [ ! -f /usr/local/bin/containerd ]; then
-            curl -L https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-amd64.tar.gz | tar -xz -C /usr/local
+            # curl -L https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-amd64.tar.gz | tar -xz -C /usr/local
+            curl -L http://readynas.stoinski.pro/fcos/containerd-1.7.13-linux-amd64.tar.gz | tar -xz -C /usr/local
           fi
 
           # Install runc
           if [ ! -f /usr/local/sbin/runc ]; then
-            curl -L https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64 -o /usr/local/sbin/runc
+            # curl -L https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64 -o /usr/local/sbin/runc
+            curl -L http://readynas.stoinski.pro/fcos/runc.amd64 -o /usr/local/sbin/runc
             chmod +x /usr/local/sbin/runc
           fi
 
           # Install CNI plugins to /opt/cni/bin
           if [ ! -d /opt/cni/bin ]; then
             mkdir -p /opt/cni/bin
-            curl -L https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz | tar -xz -C /opt/cni/bin
+            # curl -L https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz | tar -xz -C /opt/cni/bin
+            curl -L http://readynas.stoinski.pro/fcos/cni-plugins-linux-amd64-v1.4.0.tgz | tar -xz -C /opt/cni/bin
           fi
 
           # Also copy to /var/lib/cni/bin for legacy sandboxes
@@ -102,13 +105,15 @@ storage:
           # Install crictl
           if [ ! -f /usr/local/bin/crictl ]; then
             CRICTL_VERSION="v1.29.0"
-            curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$${CRICTL_VERSION}/crictl-$${CRICTL_VERSION}-linux-amd64.tar.gz | tar -xz -C /usr/local/bin
+            # curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/$${CRICTL_VERSION}/crictl-$${CRICTL_VERSION}-linux-amd64.tar.gz | tar -xz -C /usr/local/bin
+            curl -L http://readynas.stoinski.pro/fcos/crictl-$${CRICTL_VERSION}-linux-amd64.tar.gz | tar -xz -C /usr/local/bin
           fi
 
           # Install etcdctl
           if [ ! -f /usr/local/bin/etcdctl ]; then
             ETCD_VERSION="v3.5.10"
-            curl -L https://github.com/etcd-io/etcd/releases/download/$${ETCD_VERSION}/etcd-$${ETCD_VERSION}-linux-amd64.tar.gz | tar -xz -C /tmp
+            # curl -L https://github.com/etcd-io/etcd/releases/download/$${ETCD_VERSION}/etcd-$${ETCD_VERSION}-linux-amd64.tar.gz | tar -xz -C /tmp
+            curl -L http://readynas.stoinski.pro/fcos/etcd-$${ETCD_VERSION}-linux-amd64.tar.gz | tar -xz -C /tmp
             mv /tmp/etcd-$${ETCD_VERSION}-linux-amd64/etcdctl /usr/local/bin/
             rm -rf /tmp/etcd-$${ETCD_VERSION}-linux-amd64
           fi
@@ -116,15 +121,18 @@ storage:
           # Install kubelet, kubeadm, kubectl
           if [ ! -f /usr/local/bin/kubelet ]; then
             cd /usr/local/bin
-            curl -L --remote-name-all https://dl.k8s.io/release/$${KUBERNETES_VERSION}/bin/linux/amd64/{kubelet,kubeadm,kubectl}
+            # curl -L --remote-name-all https://dl.k8s.io/release/$${KUBERNETES_VERSION}/bin/linux/amd64/{kubelet,kubeadm,kubectl}
+            curl -L --remote-name-all http://readynas.stoinski.pro/fcos/{kubelet,kubeadm,kubectl}
             chmod +x kubelet kubeadm kubectl
           fi
 
           # Create kubelet systemd service
           if [ ! -f /etc/systemd/system/kubelet.service ]; then
-            curl -sSL https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubelet/kubelet.service | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service
+            # curl -sSL https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubelet/kubelet.service | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service
+            curl -sSL http://readynas.stoinski.pro/fcos/kubelet.service | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service
             mkdir -p /etc/systemd/system/kubelet.service.d
-            curl -sSL https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+            # curl -sSL https://raw.githubusercontent.com/kubernetes/release/v0.16.2/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+            curl -sSL http://readynas.stoinski.pro/fcos/10-kubeadm.conf | sed "s:/usr/bin:/usr/local/bin:g" > /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
           fi
 
           # Create kubelet config directory
@@ -282,7 +290,8 @@ storage:
 
           # Install Flannel CNI
           echo "Installing Flannel CNI..."
-          kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+          # kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+          kubectl apply -f http://readynas.stoinski.pro/fcos/kube-flannel.yml
 
           echo "Kubernetes control plane initialized successfully"
 systemd:
