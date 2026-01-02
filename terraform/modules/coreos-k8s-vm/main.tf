@@ -32,9 +32,9 @@ resource "proxmox_virtual_environment_vm" "vm" {
 
   disk {
     interface    = "scsi0"
-    datastore_id = "readynas-smb-diskimage"
+    datastore_id = "local-lvm"
     import_from  = "readynas-smb-diskimage:import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2"
-    size         = 40
+    size         = 10
   }
 
   # CPU

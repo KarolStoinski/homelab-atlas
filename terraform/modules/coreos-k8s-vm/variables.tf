@@ -28,7 +28,7 @@ variable "netmask" {
 variable "cpu_cores" {
   description = "Number of CPU cores"
   type        = number
-  default     = 2
+  default     = 4
 }
 
 variable "memory" {
