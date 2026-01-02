@@ -4,7 +4,7 @@ data "template_file" "butane" {
   template = file("${path.module}/fcos.bu.tfpl")
 
   vars = {
-    hostname = var.name
+    hostname = "${var.name}.atlas.stoinski.pro"
   }
 }
 
@@ -30,8 +30,11 @@ resource "proxmox_virtual_environment_vm" "vm" {
   name      = var.name
   node_name = "pve1"
 
-  clone {
-    vm_id = 900
+  disk {
+    interface    = "scsi0"
+    datastore_id = "readynas-smb-diskimage"
+    import_from  = "readynas-smb-diskimage:import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2"
+    size         = 40
   }
 
   # CPU

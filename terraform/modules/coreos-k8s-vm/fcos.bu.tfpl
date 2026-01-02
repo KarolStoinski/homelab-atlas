@@ -73,6 +73,11 @@ storage:
 
           KUBERNETES_VERSION="v1.29.1"
 
+          # Install required packages
+          if ! command -v conntrack &> /dev/null; then
+            rpm-ostree install --apply-live -y conntrack-tools
+          fi
+
           # Install crictl
           if [ ! -f /usr/local/bin/crictl ]; then
             CRICTL_VERSION="v1.29.0"
@@ -99,6 +104,131 @@ storage:
           # Reload systemd and enable kubelet
           systemctl daemon-reload
           systemctl enable kubelet
+    - path: /etc/kubernetes/kubeadm-config.yaml
+      mode: 0644
+      contents:
+        inline: |
+          apiVersion: kubeadm.k8s.io/v1beta3
+          kind: InitConfiguration
+          nodeRegistration:
+            criSocket: unix:///run/containerd/containerd.sock
+            kubeletExtraArgs:
+              cgroup-driver: systemd
+          ---
+          apiVersion: kubeadm.k8s.io/v1beta3
+          kind: ClusterConfiguration
+          kubernetesVersion: v1.29.1
+          networking:
+            podSubnet: 10.244.0.0/16
+            serviceSubnet: 10.96.0.0/12
+          controlPlaneEndpoint: "${hostname}:6443"
+          apiServer:
+            certSANs:
+              - 10.10.1.10
+              - k8s-control-plane.atlas.stoinski.pro
+              - "${hostname}"
+          ---
+          apiVersion: kubelet.config.k8s.io/v1beta1
+          kind: KubeletConfiguration
+          cgroupDriver: systemd
+    - path: /usr/local/bin/init-control-plane.sh
+      mode: 0755
+      contents:
+        inline: |
+          #!/bin/bash
+          set -euxo pipefail
+
+          # Wait for kubelet to be ready
+          while [ ! -f /usr/local/bin/kubeadm ]; do
+            echo "Waiting for kubeadm to be installed..."
+            sleep 5
+          done
+
+          # Backup kubeadm config
+          KUBEADM_CONFIG="/etc/kubernetes/kubeadm-config.yaml"
+          KUBEADM_CONFIG_BACKUP="/tmp/kubeadm-config.yaml"
+
+          if [ -f "$KUBEADM_CONFIG" ]; then
+            cp "$KUBEADM_CONFIG" "$KUBEADM_CONFIG_BACKUP"
+          fi
+
+          # Check if cluster is already initialized and healthy
+          if [ -f /etc/kubernetes/admin.conf ]; then
+            echo "Found existing admin.conf, checking cluster health..."
+            export KUBECONFIG=/etc/kubernetes/admin.conf
+            if kubectl get nodes &> /dev/null && kubectl get pods -n kube-system &> /dev/null; then
+              echo "Kubernetes cluster already initialized and healthy"
+              exit 0
+            else
+              echo "Cluster partially initialized but not healthy, resetting..."
+              kubeadm reset -f
+              rm -rf /var/lib/etcd /var/lib/kubelet
+              # Restore config
+              mkdir -p /etc/kubernetes
+              cp "$KUBEADM_CONFIG_BACKUP" "$KUBEADM_CONFIG"
+            fi
+          fi
+
+          # Initialize the control plane with retry logic, skipping addons
+          MAX_RETRIES=3
+          RETRY_COUNT=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            if kubeadm init --config="$KUBEADM_CONFIG" --upload-certs --skip-phases=addon/coredns,addon/kube-proxy; then
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "kubeadm init failed, attempt $RETRY_COUNT of $MAX_RETRIES. Resetting and waiting 10 seconds before retry..."
+                kubeadm reset -f
+                rm -rf /var/lib/etcd /var/lib/kubelet
+                # Restore config
+                mkdir -p /etc/kubernetes
+                cp "$KUBEADM_CONFIG_BACKUP" "$KUBEADM_CONFIG"
+                sleep 10
+              else
+                echo "kubeadm init failed after $MAX_RETRIES attempts"
+                exit 1
+              fi
+            fi
+          done
+
+          # Set up kubeconfig for core user
+          mkdir -p /home/core/.kube
+          cp /etc/kubernetes/admin.conf /home/core/.kube/config
+          chown -R core:core /home/core/.kube
+
+          # Also set up for root
+          mkdir -p /root/.kube
+          cp /etc/kubernetes/admin.conf /root/.kube/config
+
+          # Wait for API server to be fully ready
+          echo "Waiting for API server to be ready..."
+          export KUBECONFIG=/etc/kubernetes/admin.conf
+          until kubectl get nodes &> /dev/null; do
+            echo "API server not ready yet, waiting..."
+            sleep 5
+          done
+
+          # Wait additional time for API server to stabilize
+          echo "API server responding, waiting for it to stabilize..."
+          sleep 15
+
+          # Now install the addons
+          echo "Installing CoreDNS and kube-proxy..."
+          if ! kubeadm init phase addon coredns --config="$KUBEADM_CONFIG"; then
+            echo "Failed to install CoreDNS, will retry in 10 seconds..."
+            sleep 10
+            kubeadm init phase addon coredns --config="$KUBEADM_CONFIG"
+          fi
+
+          if ! kubeadm init phase addon kube-proxy --config="$KUBEADM_CONFIG"; then
+            echo "Failed to install kube-proxy, will retry in 10 seconds..."
+            sleep 10
+            kubeadm init phase addon kube-proxy --config="$KUBEADM_CONFIG"
+          fi
+
+          echo "Kubernetes control plane initialized successfully"
 systemd:
   units:
     - name: containerd-install.service
@@ -156,6 +286,21 @@ systemd:
         LimitNOFILE=infinity
         TasksMax=infinity
         OOMScoreAdjust=-999
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: kubeadm-init.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Initialize Kubernetes control plane
+        After=containerd.service kubernetes-install.service
+        Requires=containerd.service kubernetes-install.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/local/bin/init-control-plane.sh
 
         [Install]
         WantedBy=multi-user.target
