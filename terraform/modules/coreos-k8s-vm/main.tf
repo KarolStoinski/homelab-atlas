@@ -4,7 +4,8 @@ data "template_file" "butane" {
   template = file("${path.module}/fcos.bu.tfpl")
 
   vars = {
-    hostname = "${var.name}.atlas.stoinski.pro"
+    hostname     = "${var.name}.atlas.stoinski.pro"
+    join_command = var.join_command
   }
 }
 
@@ -16,7 +17,7 @@ data "ct_config" "ignition" {
 
 # Upload Ignition configuration to Proxmox
 resource "proxmox_virtual_environment_file" "ignition" {
-  node_name    = "pve1"
+  node_name    = var.node_name
   content_type = "snippets"
   datastore_id = "readynas-smb-diskimage"
 
@@ -28,7 +29,7 @@ resource "proxmox_virtual_environment_file" "ignition" {
 
 resource "proxmox_virtual_environment_vm" "vm" {
   name      = var.name
-  node_name = "pve1"
+  node_name = var.node_name
 
   disk {
     interface    = "scsi0"

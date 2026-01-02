@@ -187,6 +187,54 @@ storage:
             sleep 5
           done
 
+          JOIN_COMMAND="${join_command}"
+
+          # Check if this is a join operation
+          if [ -n "$JOIN_COMMAND" ]; then
+            echo "Joining existing cluster..."
+
+            # Check if already joined
+            if [ -f /etc/kubernetes/kubelet.conf ]; then
+              echo "Node already joined to cluster"
+              exit 0
+            fi
+
+            # Execute join command with control-plane flag
+            MAX_RETRIES=3
+            RETRY_COUNT=0
+
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+              if eval "sudo $JOIN_COMMAND --control-plane --cri-socket unix:///run/containerd/containerd.sock"; then
+                echo "Successfully joined cluster as control plane node"
+                break
+              else
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                  echo "Join failed, attempt $RETRY_COUNT of $MAX_RETRIES. Resetting and waiting 10 seconds before retry..."
+                  kubeadm reset -f
+                  rm -rf /var/lib/etcd /var/lib/kubelet
+                  sleep 10
+                else
+                  echo "Join failed after $MAX_RETRIES attempts"
+                  exit 1
+                fi
+              fi
+            done
+
+            # Set up kubeconfig for core user
+            mkdir -p /home/core/.kube
+            cp /etc/kubernetes/admin.conf /home/core/.kube/config
+            chown -R core:core /home/core/.kube
+
+            # Also set up for root
+            mkdir -p /root/.kube
+            cp /etc/kubernetes/admin.conf /root/.kube/config
+
+            echo "Kubernetes control plane node joined successfully"
+            exit 0
+          fi
+
+          # Original init logic for first control plane
           # Backup kubeadm config
           KUBEADM_CONFIG="/etc/kubernetes/kubeadm-config.yaml"
           KUBEADM_CONFIG_BACKUP="/tmp/kubeadm-config.yaml"

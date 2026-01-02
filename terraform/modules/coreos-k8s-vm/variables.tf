@@ -2,6 +2,10 @@ variable "name" {
   type = string
 }
 
+variable "node_name" {
+  type = string
+}
+
 variable "vm_ip" {
   description = "Static IP address for the VM"
   type        = string
@@ -35,4 +39,10 @@ variable "memory" {
   description = "Memory size in MB"
   type        = number
   default     = 4096
+}
+
+variable "join_command" {
+  description = "Kubeadm join command for joining existing cluster (leave empty to init new cluster)"
+  type        = string
+  default     = ""
 }

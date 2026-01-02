@@ -67,12 +67,23 @@ resource "null_resource" "wait_for_k8s_ready" {
   }
 }
 
-# Retrieve the join token
+# Retrieve the join token with certificate key for control plane nodes
 data "external" "k8s_join_token" {
   depends_on = [null_resource.wait_for_k8s_ready]
 
   program = ["bash", "-c", <<-EOT
     set -e
+
+    # Generate certificate key and upload certificates
+    CERT_KEY=$(ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 core@${var.vm_ip} \
+      "sudo kubeadm init phase upload-certs --upload-certs 2>/dev/null | tail -1" | tr -d '\n')
+
+    if [ -z "$CERT_KEY" ]; then
+      echo '{"error":"Failed to generate certificate key"}'
+      exit 1
+    fi
+
+    # Get the join command
     TOKEN=$(ssh -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5 core@${var.vm_ip} \
       "sudo kubeadm token create --print-join-command 2>/dev/null" | tr -d '\n')
 
@@ -81,7 +92,10 @@ data "external" "k8s_join_token" {
       exit 1
     fi
 
-    echo "{\"join_command\":\"$TOKEN\"}"
+    # Append certificate key to join command for control plane nodes
+    FULL_COMMAND="$TOKEN --certificate-key $CERT_KEY"
+
+    echo "{\"join_command\":\"$FULL_COMMAND\"}"
   EOT
   ]
 }
