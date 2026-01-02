@@ -1,1 +1,1 @@
-ssh core@10.10.1.11 sudo cat /etc/kubernetes/admin.conf > ~/.kube/config
+ssh -o StrictHostKeyChecking=accept-new core@10.10.1.11 sudo cat /etc/kubernetes/admin.conf > ~/.kube/config

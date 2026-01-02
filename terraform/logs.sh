@@ -1,1 +1,1 @@
-ssh core@10.10.1.11 sudo journalctl -u kubeadm-init.service -u kubernetes-install.service -u containerd-install.service -u containerd.service -u kubelet.service -n 500 -f
+ssh -o StrictHostKeyChecking=accept-new core@10.10.1.11 sudo journalctl -u kubeadm-init.service -u kubernetes-install.service -u containerd-install.service -u containerd.service -u kubelet.service -n 500 -f
