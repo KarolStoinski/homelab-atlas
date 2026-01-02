@@ -75,3 +75,13 @@ resource "proxmox_virtual_environment_vm" "vm" {
   template = false
   started  = true
 }
+
+output "vm_id" {
+  description = "VM ID"
+  value       = proxmox_virtual_environment_vm.vm.id
+}
+
+output "vm_ip" {
+  description = "VM IP address"
+  value       = var.vm_ip
+}
