@@ -64,7 +64,10 @@ import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2
 - ~~Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes worker nodes.~~
 - ~~Install FluxCD on the cluster using Terraform.~~
 - ~~Deploy metallb on the cluster using FluxCD.~~
-- Deploy ingress-nginx on the cluster using FluxCD.
+- ~~Deploy ingress-nginx on the cluster using FluxCD.~~
+- Deploy SealedSecrets with ui on the cluster using FluxCD.
+- Deploy FluxCD dashboard.
+- Add cert-manager with ovh webhook.
 - Install Grafana on the cluster using FluxCD.
 - Experiment with cri-o instead of containerd.
 - Replace flannel with calico.
