@@ -25,6 +25,12 @@ resource "proxmox_virtual_environment_file" "ignition" {
     data      = data.ct_config.ignition.rendered
     file_name = "${var.name}.ign"
   }
+
+  lifecycle {
+    ignore_changes = [
+      source_raw
+    ]
+  }
 }
 
 resource "proxmox_virtual_environment_vm" "vm" {
@@ -66,11 +72,6 @@ resource "proxmox_virtual_environment_vm" "vm" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [
-      initialization
-    ]
-  }
 
   # Network
   network_device {
