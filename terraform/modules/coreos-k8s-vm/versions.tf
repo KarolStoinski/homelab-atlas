@@ -9,5 +9,9 @@ terraform {
     ct = {
       source = "poseidon/ct"
     }
+    ovh = {
+      source  = "ovh/ovh"
+      version = "~> 0.36"
+    }
   }
 }

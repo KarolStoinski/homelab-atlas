@@ -84,6 +84,15 @@ resource "proxmox_virtual_environment_vm" "vm" {
   started  = true
 }
 
+# OVH DNS Record
+resource "ovh_domain_zone_record" "vm_dns" {
+  zone      = var.dns_zone
+  subdomain = "${var.name}.${var.dns_subdomain}"
+  fieldtype = "A"
+  ttl       = 60
+  target    = var.vm_ip
+}
+
 output "vm_id" {
   description = "VM ID"
   value       = proxmox_virtual_environment_vm.vm.id
@@ -92,4 +101,13 @@ output "vm_id" {
 output "vm_ip" {
   description = "VM IP address"
   value       = var.vm_ip
+}
+
+output "fqdn" {
+  description = "Fully qualified domain name"
+  value       = "${var.name}.${var.dns_subdomain}.${var.dns_zone}"
+
+  depends_on = [
+    ovh_domain_zone_record.vm_dns
+  ]
 }

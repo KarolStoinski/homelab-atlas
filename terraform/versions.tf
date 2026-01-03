@@ -10,5 +10,9 @@ terraform {
       source  = "fluxcd/flux"
       version = "~> 1.7.6"
     }
+    ovh = {
+      source  = "ovh/ovh"
+      version = "~> 0.36"
+    }
   }
 }

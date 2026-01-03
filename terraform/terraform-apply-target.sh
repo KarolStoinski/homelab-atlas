@@ -1,0 +1,1 @@
+op run --env-file=.env.tpl -- terraform apply -target=$1

@@ -28,3 +28,27 @@ variable "flux_git_token" {
   description = "Git token/password for Flux"
   sensitive = true
 }
+
+variable "ovh_endpoint" {
+  type        = string
+  description = "OVH API endpoint (e.g., ovh-eu)"
+  default     = "ovh-eu"
+}
+
+variable "ovh_application_key" {
+  type        = string
+  description = "OVH API application key"
+  sensitive   = true
+}
+
+variable "ovh_application_secret" {
+  type        = string
+  description = "OVH API application secret"
+  sensitive   = true
+}
+
+variable "ovh_consumer_key" {
+  type        = string
+  description = "OVH API consumer key"
+  sensitive   = true
+}

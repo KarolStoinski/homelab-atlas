@@ -65,6 +65,7 @@ import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2
 - ~~Install FluxCD on the cluster using Terraform.~~
 - ~~Deploy metallb on the cluster using FluxCD.~~
 - ~~Deploy ingress-nginx on the cluster using FluxCD.~~
+- ~~Add OVH domains through Terraform.~~
 - Deploy SealedSecrets with ui on the cluster using FluxCD.
 - Deploy FluxCD dashboard.
 - Add cert-manager with ovh webhook.

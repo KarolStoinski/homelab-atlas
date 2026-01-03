@@ -5,3 +5,6 @@ TF_VAR_proxmox_ssh_password=op://HomeLab/Proxmox-Terraform-Root/password
 TF_VAR_coreos_password_hash=op://HomeLab/CoreOS-Password-Hash/password
 TF_VAR_flux_git_username=op://HomeLab/GitHub-Token/username
 TF_VAR_flux_git_token=op://HomeLab/GitHub-Token/password
+TF_VAR_ovh_application_key=op://HomeLab/OVH-API/application_key
+TF_VAR_ovh_application_secret=op://HomeLab/OVH-API/application_secret
+TF_VAR_ovh_consumer_key=op://HomeLab/OVH-API/consumer_key
