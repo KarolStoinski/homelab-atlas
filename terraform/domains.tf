@@ -28,8 +28,8 @@ module "dns-pbs1" {
   ip            = "192.168.1.204"
 }
 
-module "dns-atlas-wildcard" {
+module "dns-capacitor" {
   source        = "./modules/ovh-domain"
-  dns_subdomain = "*.atlas"
+  dns_subdomain = "capacitor.atlas"
   ip            = "10.10.1.30"
 }
