@@ -7,15 +7,9 @@ module "k8s-control-plane-1" {
 }
 
 module "k8s-join-token-1" {
-  source = "./modules/k8s-join-token"
+  source = "./modules/k8s-join-token-control-plane"
   vm_ip  = module.k8s-control-plane-1.vm_ip
   vm_id  = module.k8s-control-plane-1.vm_id
-}
-
-output "k8s_join_command" {
-  description = "Kubernetes join command for worker nodes"
-  value       = module.k8s-join-token-1.join_command
-  sensitive   = true
 }
 
 module "k8s-control-plane-2" {
@@ -49,5 +43,60 @@ module "k8s-control-plane-readiness" {
   depends_on = [
     module.k8s-control-plane-2,
     module.k8s-control-plane-3
+  ]
+}
+
+module "k8s-join-token-worker" {
+  source = "./modules/k8s-join-token-worker"
+  vm_ip  = module.k8s-control-plane-1.vm_ip
+
+  depends_on = [
+    module.k8s-control-plane-readiness
+  ]
+}
+
+module "k8s-worker-1" {
+  source       = "./modules/coreos-k8s-vm"
+  name         = "k8s-worker-1"
+  vm_ip        = "10.10.1.21"
+  node_name    = "pve1"
+  datastore_id = "local-lvm"
+  join_command = module.k8s-join-token-worker.join_command
+}
+
+module "k8s-worker-2" {
+  source       = "./modules/coreos-k8s-vm"
+  name         = "k8s-worker-2"
+  vm_ip        = "10.10.1.22"
+  node_name    = "pve2"
+  datastore_id = "local-lvm"
+  join_command = module.k8s-join-token-worker.join_command
+}
+
+module "k8s-worker-3" {
+  source       = "./modules/coreos-k8s-vm"
+  name         = "k8s-worker-3"
+  vm_ip        = "10.10.1.23"
+  node_name    = "pve3"
+  datastore_id = "local-lvm"
+  join_command = module.k8s-join-token-worker.join_command
+}
+
+module "k8s-worker-readiness" {
+  source             = "./modules/k8s-node-readiness"
+  node_names         = [
+    "k8s-worker-1.atlas.stoinski.pro",
+    "k8s-worker-2.atlas.stoinski.pro",
+    "k8s-worker-3.atlas.stoinski.pro"
+  ]
+  control_plane_ip   = module.k8s-control-plane-1.vm_ip
+  timeout_seconds    = 1800
+  check_interval     = 10
+
+  depends_on = [
+    module.k8s-worker-1,
+    module.k8s-worker-2,
+    module.k8s-worker-3,
+    module.k8s-control-plane-readiness
   ]
 }

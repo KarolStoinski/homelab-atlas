@@ -133,6 +133,9 @@ storage:
           # Create kubelet config directory
           mkdir -p /var/lib/kubelet
 
+          # Create manifests directory (to silence kubelet warnings)
+          mkdir -p /etc/kubernetes/manifests
+
           # Reload systemd and enable kubelet
           systemctl daemon-reload
           systemctl enable kubelet
@@ -174,7 +177,7 @@ storage:
           kind: KubeletConfiguration
           cgroupDriver: systemd
           volumePluginDir: /var/lib/kubelet/volumeplugins
-    - path: /usr/local/bin/init-control-plane.sh
+    - path: /usr/local/bin/init-kubernetes.sh
       mode: 0755
       contents:
         inline: |
@@ -204,8 +207,8 @@ storage:
             RETRY_COUNT=0
 
             while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-              if eval "sudo $JOIN_COMMAND --control-plane --cri-socket unix:///run/containerd/containerd.sock"; then
-                echo "Successfully joined cluster as control plane node"
+              if eval "sudo $JOIN_COMMAND --cri-socket unix:///run/containerd/containerd.sock"; then
+                echo "Successfully joined cluster"
                 break
               else
                 RETRY_COUNT=$((RETRY_COUNT + 1))
@@ -397,7 +400,7 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
-    - name: kubeadm-init.service
+    - name: kubernetes-init.service
       enabled: true
       contents: |
         [Unit]
@@ -408,7 +411,7 @@ systemd:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/usr/local/bin/init-control-plane.sh
+        ExecStart=/usr/local/bin/init-kubernetes.sh
 
         [Install]
         WantedBy=multi-user.target

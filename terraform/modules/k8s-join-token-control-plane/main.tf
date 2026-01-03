@@ -93,7 +93,7 @@ data "external" "k8s_join_token" {
     fi
 
     # Append certificate key to join command for control plane nodes
-    FULL_COMMAND="$TOKEN --certificate-key $CERT_KEY"
+    FULL_COMMAND="$TOKEN --certificate-key $CERT_KEY --control-plane"
 
     echo "{\"join_command\":\"$FULL_COMMAND\"}"
   EOT
