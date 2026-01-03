@@ -7,4 +7,3 @@ resources:
   - release.yaml
   - ovh-webhook-source.yaml
   - ovh-webhook-release.yaml
-  - cluster-issuer-ovh.yaml
