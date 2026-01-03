@@ -14,8 +14,8 @@ spec:
         name: metallb
         namespace: metallb-system
       interval: 1h
-      timeout: 15m
   install:
     crds: Create
+    timeout: 30m
   upgrade:
     crds: CreateReplace
