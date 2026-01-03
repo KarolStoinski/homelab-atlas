@@ -23,3 +23,23 @@ spec:
   values:
     groupName: acme.stoinski.pro
     configVersion: 0.0.2
+    issuers:
+      - name: letsencrypt-prod
+        create: true
+        kind: ClusterIssuer
+        namespace: cert-manager
+        cnameStrategy: Follow
+        acmeServerUrl: https://acme-v02.api.letsencrypt.org/directory
+        email: karol.stoinski@gmail.com
+        ovhEndpointName: ovh-eu
+        ovhAuthenticationMethod: application
+        ovhAuthenticationRef:
+          applicationKeyRef:
+            name: ovh-credentials
+            key: applicationKey
+          applicationSecretRef:
+            name: ovh-credentials
+            key: applicationSecret
+          applicationConsumerKeyRef:
+            name: ovh-credentials
+            key: consumerKey
