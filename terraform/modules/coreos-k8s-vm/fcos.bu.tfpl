@@ -407,6 +407,7 @@ systemd:
         Description=Initialize Kubernetes control plane
         After=containerd.service kubernetes-install.service
         Requires=containerd.service kubernetes-install.service
+        ConditionPathExists=!/etc/kubernetes/admin.conf
 
         [Service]
         Type=oneshot
