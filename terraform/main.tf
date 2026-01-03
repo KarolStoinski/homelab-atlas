@@ -3,6 +3,7 @@ module "k8s-control-plane-1" {
   name          = "k8s-control-plane-1"
   vm_ip         = "10.10.1.11"
   node_name     = "pve1"
+  datastore_id  = "local-lvm"
 }
 
 module "k8s-join-token-1" {
@@ -22,6 +23,7 @@ module "k8s-control-plane-2" {
   name         = "k8s-control-plane-2"
   vm_ip        = "10.10.1.12"
   node_name    = "pve2"
+  datastore_id = "local-lvm"
   join_command = module.k8s-join-token-1.join_command
 }
 
@@ -30,6 +32,7 @@ module "k8s-control-plane-3" {
   name         = "k8s-control-plane-3"
   vm_ip        = "10.10.1.13"
   node_name    = "pve3"
+  datastore_id = "local-lvm"
   join_command = module.k8s-join-token-1.join_command
 }
 
@@ -40,7 +43,7 @@ module "k8s-control-plane-readiness" {
     "k8s-control-plane-3.atlas.stoinski.pro"
   ]
   control_plane_ip   = module.k8s-control-plane-1.vm_ip
-  timeout_seconds    = 600
+  timeout_seconds    = 900
   check_interval     = 10
 
   depends_on = [

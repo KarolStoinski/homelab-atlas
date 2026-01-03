@@ -6,6 +6,11 @@ variable "node_name" {
   type = string
 }
 
+variable "datastore_id" {
+  type = string
+  default = "local-lvm"
+}
+
 variable "vm_ip" {
   description = "Static IP address for the VM"
   type        = string

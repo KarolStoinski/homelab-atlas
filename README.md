@@ -59,7 +59,7 @@ import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2
 - ~~Create a Terraform module for Fedora CoreOS VMs.~~
 - ~~Add static IPs for the Fedora CoreOS VMs in the Terraform module.~~
 - ~~Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes control plane nodes.~~
-- Create a Terraform module for checking cluster node readiness.
+- ~~Create a Terraform module for checking cluster node readiness.~~
 - Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes worker nodes.
 - Experiment with cri-o instead of containerd.
 - Replace flannel with calico.

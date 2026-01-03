@@ -1,1 +1,1 @@
-op run --env-file=.env.tpl -- terraform apply -auto-approve
+op run --env-file=.env.tpl -- terraform apply # -auto-approve
