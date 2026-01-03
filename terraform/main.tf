@@ -116,7 +116,6 @@ module "flux-bootstrap" {
 
   depends_on = [
     module.k8s-worker-readiness,
-    module.k8s-kubeconfig,
-    module.k8s-control-plane-1.fqdn
+    module.k8s-kubeconfig
   ]
 }
