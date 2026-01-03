@@ -27,3 +27,9 @@ module "dns-pbs1" {
   dns_subdomain = "pbs1.atlas"
   ip            = "192.168.1.204"
 }
+
+module "dns-atlas-wildcard" {
+  source        = "./modules/ovh-domain"
+  dns_subdomain = "*.atlas"
+  ip            = "10.10.1.30"
+}
