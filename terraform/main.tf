@@ -100,3 +100,12 @@ module "k8s-worker-readiness" {
     module.k8s-control-plane-readiness
   ]
 }
+
+module "k8s-kubeconfig" {
+  source           = "./modules/k8s-kubeconfig"
+  control_plane_ip = module.k8s-control-plane-1.vm_ip
+
+  depends_on = [
+    module.k8s-control-plane-readiness
+  ]
+}
