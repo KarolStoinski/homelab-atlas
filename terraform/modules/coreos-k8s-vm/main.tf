@@ -66,6 +66,12 @@ resource "proxmox_virtual_environment_vm" "vm" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [
+      initialization
+    ]
+  }
+
   # Network
   network_device {
     model  = "virtio"
