@@ -109,3 +109,13 @@ module "k8s-kubeconfig" {
     module.k8s-control-plane-readiness
   ]
 }
+
+module "flux-bootstrap" {
+  source      = "./modules/flux-bootstrap"
+  target_path = "flux"
+
+  depends_on = [
+    module.k8s-worker-readiness,
+    module.k8s-kubeconfig
+  ]
+}

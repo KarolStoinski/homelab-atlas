@@ -9,3 +9,8 @@ output "kubeconfig" {
   value       = base64decode(data.external.kubeconfig.result.kubeconfig)
   sensitive   = true
 }
+
+output "kubeconfig_path" {
+  description = "Path to saved kubeconfig file"
+  value       = local_sensitive_file.kubeconfig.filename
+}

@@ -17,3 +17,8 @@ data "external" "kubeconfig" {
 
   depends_on = [null_resource.retrieve_kubeconfig]
 }
+
+resource "local_sensitive_file" "kubeconfig" {
+  content  = base64decode(data.external.kubeconfig.result.kubeconfig)
+  filename = "${path.root}/kubeconfig"
+}

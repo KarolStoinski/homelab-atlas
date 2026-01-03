@@ -10,3 +10,16 @@ provider "proxmox" {
     password = var.proxmox_ssh_password
   }
 }
+
+provider "flux" {
+  kubernetes = {
+    config_path = "${path.root}/kubeconfig"
+  }
+  git = {
+    url = var.flux_git_repo_url
+    http = {
+      username = var.flux_git_username
+      password = var.flux_git_token
+    }
+  }
+}
