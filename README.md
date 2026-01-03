@@ -61,4 +61,10 @@ import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2
 - ~~Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes control plane nodes.~~
 - Create a Terraform module for checking cluster node readiness.
 - Deploy three Fedora CoreOS VMs on the cluster to serve as Kubernetes worker nodes.
+- Experiment with cri-o instead of containerd.
+- Replace flannel with calico.
+- Install FluxCD on the cluster using Terraform.
+- Deploy metallb on the cluster using FluxCD.
+- Deploy ingress-nginx on the cluster using FluxCD.
+- Install Grafana on the cluster using FluxCD.
 - ~~Write a tutorial on how to prepare a Fedora CoreOS VM Template for Terraform. (edit: won't do this. I've replaced template with importing qcow image into smb share)~~
