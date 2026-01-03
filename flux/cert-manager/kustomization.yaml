@@ -5,3 +5,6 @@ resources:
   - namespace.yaml
   - source.yaml
   - release.yaml
+  - ovh-webhook-source.yaml
+  - ovh-webhook-release.yaml
+  - cluster-issuer-ovh.yaml

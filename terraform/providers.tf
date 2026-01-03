@@ -30,3 +30,7 @@ provider "ovh" {
   application_secret = var.ovh_application_secret
   consumer_key       = var.ovh_consumer_key
 }
+
+provider "kubernetes" {
+  config_path = "${path.root}/kubeconfig"
+}
