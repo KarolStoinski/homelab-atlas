@@ -33,8 +33,8 @@ module "k8s-control-plane-3" {
 module "k8s-control-plane-readiness" {
   source             = "./modules/k8s-node-readiness"
   node_names         = [
-    "k8s-control-plane-2.atlas.stoinski.pro",
-    "k8s-control-plane-3.atlas.stoinski.pro"
+    module.k8s-control-plane-2.fqdn,
+    module.k8s-control-plane-3.fqdn
   ]
   control_plane_ip   = module.k8s-control-plane-1.vm_ip
   timeout_seconds    = 900
@@ -85,9 +85,9 @@ module "k8s-worker-3" {
 module "k8s-worker-readiness" {
   source             = "./modules/k8s-node-readiness"
   node_names         = [
-    "k8s-worker-1.atlas.stoinski.pro",
-    "k8s-worker-2.atlas.stoinski.pro",
-    "k8s-worker-3.atlas.stoinski.pro"
+    module.k8s-worker-1.fqdn,
+    module.k8s-worker-2.fqdn,
+    module.k8s-worker-3.fqdn
   ]
   control_plane_ip   = module.k8s-control-plane-1.vm_ip
   timeout_seconds    = 1800
