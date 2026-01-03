@@ -116,6 +116,7 @@ module "flux-bootstrap" {
 
   depends_on = [
     module.k8s-worker-readiness,
-    module.k8s-kubeconfig
+    module.k8s-kubeconfig,
+    kubernetes_secret_v1.cert_manager_ovh_credentials
   ]
 }
