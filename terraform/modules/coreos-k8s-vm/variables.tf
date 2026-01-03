@@ -32,13 +32,13 @@ variable "netmask" {
 variable "cpu_cores" {
   description = "Number of CPU cores"
   type        = number
-  default     = 4
+  default     = 2
 }
 
 variable "memory" {
   description = "Memory size in MB"
   type        = number
-  default     = 4096
+  default     = 2048
 }
 
 variable "join_command" {
