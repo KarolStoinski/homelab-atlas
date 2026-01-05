@@ -73,7 +73,7 @@ import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2
 - ~~Add Loki to the cluster using FluxCD~~ (Won't do. Cluster has not enough resources to run Loki)
 - ~~Add SMB StorageClass.~~
 - ~~Add NFS StorageClass.~~
-- Add SFTP StorageClass.
+- ~~Add SFTP StorageClass.~~ (Won't do. I tried it just because of curiosity, and it didn't work out of the box)
 - Deploy SealedSecrets with ui on the cluster using FluxCD.
 - Install Grafana on the cluster using FluxCD.
 - Experiment with cri-o instead of containerd.
