@@ -1,0 +1,29 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: prometheus
+  namespace: prometheus
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: prometheus
+      version: '>=28.0.0 <29.0.0'
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: prometheus
+      interval: 1h
+  install:
+    timeout: 15m
+    crds: Create
+  upgrade:
+    timeout: 15m
+    crds: CreateReplace
+  values:
+    alertmanager:
+      enabled: true
+#    server:
+#      persistentVolume:
+#        enabled: true
+#        size: 8Gi
