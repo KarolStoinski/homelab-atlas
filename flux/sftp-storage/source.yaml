@@ -1,8 +1,13 @@
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: HelmRepository
+kind: GitRepository
 metadata:
   name: csi-rclone
   namespace: sftp-csi-driver
 spec:
   interval: 24h
-  url: https://wunderio.github.io/csi-rclone
+  url: https://github.com/wunderio/csi-rclone
+  ref:
+    tag: v1.3.0
+  ignore: |
+    /*
+    !/deploy/kubernetes

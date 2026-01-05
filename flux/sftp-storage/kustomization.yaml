@@ -4,5 +4,5 @@ namespace: sftp-csi-driver
 resources:
   - namespace.yaml
   - source.yaml
-  - release.yaml
+  - kustomization-deploy.yaml
   - storageclass.yaml
