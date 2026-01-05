@@ -22,9 +22,9 @@ resource "kubernetes_secret_v1" "cert_manager_ovh_credentials" {
   }
 
   data = {
-    applicationKey    = var.ovh_application_key
-    applicationSecret = var.ovh_application_secret
-    consumerKey       = var.ovh_consumer_key
+    applicationKey    = local.ovh_application_key
+    applicationSecret = local.ovh_application_secret
+    consumerKey       = local.ovh_consumer_key
   }
 
   type = "Opaque"

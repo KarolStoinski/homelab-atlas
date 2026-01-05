@@ -18,6 +18,11 @@ data "onepassword_item" "ovh_api" {
   title = "OVH-API"
 }
 
+data "onepassword_item" "smb_csi_driver_credentials" {
+  vault = "HomeLab"
+  title = "ReadyNAS-K8s"
+}
+
 locals {
   # Get OVH API fields
   ovh_application_key_value = [
@@ -48,4 +53,6 @@ locals {
   ovh_application_key      = flatten(local.ovh_application_key_value)[0]
   ovh_application_secret   = flatten(local.ovh_application_secret_value)[0]
   ovh_consumer_key         = flatten(local.ovh_consumer_key_value)[0]
+  smb_csi_driver_username  = data.onepassword_item.smb_csi_driver_credentials.username
+  smb_csi_driver_password  = data.onepassword_item.smb_csi_driver_credentials.password
 }
