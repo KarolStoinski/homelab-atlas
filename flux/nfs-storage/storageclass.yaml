@@ -5,7 +5,7 @@ metadata:
 provisioner: nfs.csi.k8s.io
 parameters:
   server: readynas.stoinski.pro
-  share: /k8s
+  share: /RAID0/k8s
 reclaimPolicy: Retain
 volumeBindingMode: Immediate
 mountOptions:
