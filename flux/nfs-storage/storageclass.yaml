@@ -13,5 +13,3 @@ mountOptions:
   - hard
   - timeo=600
   - retrans=2
-  - uid=1000
-  - gid=1000
