@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ubuntu-storage-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: smb
+  mountOptions:
+    - dir_mode=0777
+    - file_mode=0777
+  csi:
+    driver: smb.csi.k8s.io
+    readOnly: false
+    volumeHandle: ubuntu-storage-pv
+    volumeAttributes:
+      source: "//readynas.stoinski.pro/k8s/ubuntu"
+    nodeStageSecretRef:
+      name: smb-creds
+      namespace: smb-csi-driver
