@@ -1,1 +1,0 @@
-op run --env-file=.env.tpl -- terraform state rm $1
