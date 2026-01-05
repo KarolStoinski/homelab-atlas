@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ubuntu-storage
+  name: ubuntu-smb-storage
   namespace: ubuntu
 spec:
   accessModes:
     - ReadWriteMany
   storageClassName: smb
-  volumeName: ubuntu-storage-pv
+  volumeName: ubuntu-smb-storage-pv
   resources:
     requests:
       storage: 10Gi

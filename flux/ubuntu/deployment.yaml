@@ -18,9 +18,14 @@ spec:
         image: ubuntu:latest
         command: ["sleep", "infinity"]
         volumeMounts:
-        - name: storage
-          mountPath: /mnt/storage
+        - name: smb-storage
+          mountPath: /mnt/smb-storage
+        - name: nfs-storage
+          mountPath: /mnt/nfs-storage
       volumes:
-      - name: storage
+      - name: smb-storage
         persistentVolumeClaim:
-          claimName: ubuntu-storage
+          claimName: ubuntu-smb-storage
+      - name: nfs-storage
+        persistentVolumeClaim:
+          claimName: ubuntu-nfs-storage
