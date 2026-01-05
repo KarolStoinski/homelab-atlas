@@ -61,6 +61,7 @@ module "k8s-worker-1" {
   vm_ip        = "10.10.1.21"
   node_name    = "pve1"
   datastore_id = "local-lvm"
+  memory       = 5 * 1024
   join_command = module.k8s-join-token-worker.join_command
 }
 
@@ -70,6 +71,7 @@ module "k8s-worker-2" {
   vm_ip        = "10.10.1.22"
   node_name    = "pve2"
   datastore_id = "local-lvm"
+  memory       = 12 * 1024
   join_command = module.k8s-join-token-worker.join_command
 }
 
@@ -79,6 +81,7 @@ module "k8s-worker-3" {
   vm_ip        = "10.10.1.23"
   node_name    = "pve3"
   datastore_id = "local-lvm"
+  memory       = 12 * 1024
   join_command = module.k8s-join-token-worker.join_command
 }
 
