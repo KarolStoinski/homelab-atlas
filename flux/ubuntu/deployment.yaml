@@ -17,3 +17,10 @@ spec:
       - name: ubuntu
         image: ubuntu:latest
         command: ["sleep", "infinity"]
+        volumeMounts:
+        - name: storage
+          mountPath: /mnt/storage
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: ubuntu-storage
