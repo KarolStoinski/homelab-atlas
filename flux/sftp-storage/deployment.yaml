@@ -1,0 +1,163 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: csi-sshfs-node
+  namespace: sftp-csi-driver
+spec:
+  selector:
+    matchLabels:
+      app: csi-sshfs-node
+  template:
+    metadata:
+      labels:
+        app: csi-sshfs-node
+    spec:
+      hostNetwork: true
+      containers:
+      - name: node-driver-registrar
+        image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.11.0
+        args:
+        - --v=5
+        - --csi-address=/csi/csi.sock
+        - --kubelet-registration-path=/var/lib/kubelet/plugins/csi-sshfs/csi.sock
+        env:
+        - name: KUBE_NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        volumeMounts:
+        - name: plugin-dir
+          mountPath: /csi
+        - name: registration-dir
+          mountPath: /registration
+      - name: sshfs
+        image: ghcr.io/velerion/csi-sshfs:v1.4.0
+        securityContext:
+          privileged: true
+          capabilities:
+            add: ["SYS_ADMIN"]
+          allowPrivilegeEscalation: true
+        args:
+        - --nodeid=$(NODE_ID)
+        - --endpoint=$(CSI_ENDPOINT)
+        env:
+        - name: NODE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: CSI_ENDPOINT
+          value: unix:///csi/csi.sock
+        volumeMounts:
+        - name: plugin-dir
+          mountPath: /csi
+        - name: pods-mount-dir
+          mountPath: /var/lib/kubelet/pods
+          mountPropagation: Bidirectional
+        - name: fuse-device
+          mountPath: /dev/fuse
+      volumes:
+      - name: plugin-dir
+        hostPath:
+          path: /var/lib/kubelet/plugins/csi-sshfs
+          type: DirectoryOrCreate
+      - name: pods-mount-dir
+        hostPath:
+          path: /var/lib/kubelet/pods
+          type: Directory
+      - name: registration-dir
+        hostPath:
+          path: /var/lib/kubelet/plugins_registry
+          type: Directory
+      - name: fuse-device
+        hostPath:
+          path: /dev/fuse
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: csi-sshfs-controller
+  namespace: sftp-csi-driver
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: external-provisioner-runner
+rules:
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list", "watch", "update"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["list", "watch", "create", "update", "patch"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["csinodes"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: csi-provisioner-role
+subjects:
+- kind: ServiceAccount
+  name: csi-sshfs-controller
+  namespace: sftp-csi-driver
+roleRef:
+  kind: ClusterRole
+  name: external-provisioner-runner
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: csi-sshfs-controller
+  namespace: sftp-csi-driver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: csi-sshfs-controller
+  template:
+    metadata:
+      labels:
+        app: csi-sshfs-controller
+    spec:
+      serviceAccountName: csi-sshfs-controller
+      containers:
+      - name: csi-provisioner
+        image: registry.k8s.io/sig-storage/csi-provisioner:v5.1.0
+        args:
+        - --csi-address=$(ADDRESS)
+        - --v=5
+        env:
+        - name: ADDRESS
+          value: /csi/csi.sock
+        volumeMounts:
+        - name: socket-dir
+          mountPath: /csi
+      - name: sshfs
+        image: ghcr.io/velerion/csi-sshfs:v1.4.0
+        args:
+        - --nodeid=$(NODE_ID)
+        - --endpoint=$(CSI_ENDPOINT)
+        env:
+        - name: NODE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: CSI_ENDPOINT
+          value: unix:///csi/csi.sock
+        volumeMounts:
+        - name: socket-dir
+          mountPath: /csi
+      volumes:
+      - name: socket-dir
+        emptyDir: {}
