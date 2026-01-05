@@ -70,6 +70,7 @@ import/fedora-coreos-43.20251120.3.0-proxmoxve.x86_64.qcow2
 - ~~Deploy FluxCD dashboard.~~
 - ~~Integrate 1Password terraform provider to replace `op` command and .env.tpl files.~~
 - Add Prometheus to the cluster using FluxCD.
+- Add 
 - Deploy SealedSecrets with ui on the cluster using FluxCD.
 - Install Grafana on the cluster using FluxCD.
 - Experiment with cri-o instead of containerd.

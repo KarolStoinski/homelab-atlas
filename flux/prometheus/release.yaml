@@ -22,8 +22,7 @@ spec:
     crds: CreateReplace
   values:
     alertmanager:
-      enabled: true
-#    server:
-#      persistentVolume:
-#        enabled: true
-#        size: 8Gi
+      enabled: false
+    server:
+      persistentVolume:
+        enabled: false
