@@ -2,14 +2,20 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: sftp
-provisioner: csi-sshfs
+provisioner: rclone.csi.wunderio.com
 parameters:
-  server: YOUR_SFTP_SERVER
-  port: "22"
-  # Reference to secret with username/password or private key
-  csi.storage.k8s.io/provisioner-secret-name: sftp-creds
-  csi.storage.k8s.io/provisioner-secret-namespace: sftp-csi-driver
-  csi.storage.k8s.io/node-stage-secret-name: sftp-creds
-  csi.storage.k8s.io/node-stage-secret-namespace: sftp-csi-driver
+  remote: "sftp"
+  remotePath: "/"
+  sftp-host: "YOUR_SFTP_SERVER"
+  sftp-port: "22"
+  # Reference to secret with credentials
+  csi.storage.k8s.io/provisioner-secret-name: "sftp-creds"
+  csi.storage.k8s.io/provisioner-secret-namespace: "sftp-csi-driver"
+  csi.storage.k8s.io/controller-publish-secret-name: "sftp-creds"
+  csi.storage.k8s.io/controller-publish-secret-namespace: "sftp-csi-driver"
+  csi.storage.k8s.io/node-stage-secret-name: "sftp-creds"
+  csi.storage.k8s.io/node-stage-secret-namespace: "sftp-csi-driver"
+  csi.storage.k8s.io/node-publish-secret-name: "sftp-creds"
+  csi.storage.k8s.io/node-publish-secret-namespace: "sftp-csi-driver"
 reclaimPolicy: Retain
 volumeBindingMode: Immediate

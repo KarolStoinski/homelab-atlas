@@ -3,6 +3,6 @@ kind: Kustomization
 namespace: sftp-csi-driver
 resources:
   - namespace.yaml
-  - csidriver.yaml
-  - deployment.yaml
+  - source.yaml
+  - release.yaml
   - storageclass.yaml

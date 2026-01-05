@@ -22,8 +22,8 @@ resource "kubernetes_secret_v1" "sftp_csi_driver_credentials" {
   }
 
   data = {
-    username    = local.smb_csi_driver_username
-    password    = local.smb_csi_driver_password
+    "sftp-user" = local.smb_csi_driver_username
+    "sftp-pass" = base64encode(local.smb_csi_driver_password)
   }
 
   type = "Opaque"
