@@ -24,13 +24,16 @@ spec:
     deploymentMode: SingleBinary
     loki:
       auth_enabled: false
-      useTestSchema: true
       commonConfig:
         replication_factor: 1
       storage:
         type: 'filesystem'
     singleBinary:
       replicas: 1
+      persistence:
+        enabled: true
+        storageClass: nfs
+        size: 10Gi
     write:
       replicas: 0
     read:
