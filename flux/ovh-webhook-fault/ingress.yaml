@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ovh-webhook-fault
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - myappname.develop.myappname.dev
+      secretName: myappname.develop.myappname.dev-keyandcert
+  rules:
+    - host: myappname.develop.myappname.dev
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: nothing
+                port:
+                  number: 8080
