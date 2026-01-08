@@ -9,10 +9,10 @@ spec:
   ingressClassName: nginx
   tls:
     - hosts:
-        - myappname.develop.myappname.dev
-      secretName: myappname.develop.myappname.dev-keyandcert
+        - myappname.developer.myappname.dev
+      secretName: myappname.developer.myappname.dev-keyandcert
   rules:
-    - host: myappname.develop.myappname.dev
+    - host: myappname.developer.myappname.dev
       http:
         paths:
           - pathType: Prefix
